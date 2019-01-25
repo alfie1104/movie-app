@@ -4,7 +4,6 @@ import Movie from "./Movie";
 
 class App extends Component {
   state = {
-    greeting: 'Hello!',
   };
 
   componentWillMount() {
@@ -12,48 +11,43 @@ class App extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        movies: [
-          {
-            title: "Matrix",
-            poster: "https://upload.wikimedia.org/wikipedia/en/thumb/0/06/Ultimate_Matrix_Collection_poster.jpg/220px-Ultimate_Matrix_Collection_poster.jpg"
-          },
-          {
-            title: "Full Metal Jacket",
-            poster: "https://cdn1.thr.com/sites/default/files/imagecache/landscape_928x523/2017/05/full_metal_jacket_1987_3-h_2017.jpg",
-          },
-          {
-            title: "Oldboy",
-            poster: "https://cdn1.thr.com/sites/default/files/imagecache/landscape_928x523/2013/11/oldboy-still.jpg",
-          },
-          {
-            title: "Star Wars",
-            poster: "https://lumiere-a.akamaihd.net/v1/images/og-generic_02031d2b.png"
-          },
-          {
-            title: "Trainspoting",
-            poster: "https://lumiere-a.akamaihd.net/v1/images/og-generic_02031d2b.png"
-          }
-        ]
-      })
-    }, 5000);
+    this._getMovies();
   }
 
   _renderMovies = () => {
-    const movies = this.state.movies.map((movie, index) => (
-      <Movie key={index} title={movie.title} poster={movie.poster} />
-    ));
+    const movies = this.state.movies.map((movie) => {
+      return <Movie
+        key={movie.id}
+        title={movie.title_english}
+        poster={movie.large_cover_image}
+        genres={movie.genres}
+        synopsis={movie.synopsis}
+      />
+    });
 
     return movies;
   }
 
+  _getMovies = async () => {
+    const movies = await this._callApi();
+    this.setState({
+      movies
+    });
+  }
+
+  _callApi = () => {
+    return fetch("https://yts.am/api/v2/list_movies.json?sort_by=download_count")
+      .then(response => response.json())
+      .then(json => json.data.movies)
+      .catch(err => console.log(err));
+  }
+
   render() {
+    const { movies } = this.state;
     return (
-      <div className="App">
-        {this.state.greeting}
-        {this.state.movies ? this._renderMovies() : "Loading"}
-      </div>
+      <div className={movies ? "App" : "App--loading"}>
+        {movies ? this._renderMovies() : "Loading"}
+      </ div>
     );
   }
 }
