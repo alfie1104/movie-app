@@ -18,7 +18,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
-  "homepage": "http://github.io/alfie1104/movie-app",
+  "homepage": "http://alfie1104.github.io/movie-app",
   "eslintConfig": {
     "extends": "react-app"
   },
